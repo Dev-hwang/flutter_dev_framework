@@ -1,0 +1,39 @@
+name: flutter_dev_framework
+description: This plugin contains components, utilities, etc. to make Flutter app development easy.
+version: 1.0.0
+author: WOO JIN HWANG <hwj930513@naver.com>
+homepage: https://github.com/Dev-hwang/flutter_dev_framework
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.20.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  intl: ^0.17.0
+  http: ^0.13.3
+  cryptography: ^2.0.1
+  device_info: ^2.0.2
+  fluttertoast: ^8.0.7
+  path_provider: ^2.0.2
+  auto_size_text: ^3.0.0-nullsafety.0
+  sqflite: ^2.0.0+3
+  shared_preferences: ^2.0.6
+  flutter_local_notifications: ^6.0.0
+  permission_handler: ^8.0.1
+  sentry: ^5.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.pravera.flutter_dev_framework
+        pluginClass: FlutterDevFrameworkPlugin
+      ios:
+        pluginClass: FlutterDevFrameworkPlugin
