@@ -13,8 +13,8 @@ abstract class RestApi {
   NetworkProtocol? _networkProtocol;
   NetworkProtocol? get networkProtocol => _networkProtocol;
 
-  String? _baseUrl;
-  String? get baseUrl => _baseUrl;
+  String? _authority;
+  String? get authority => _authority;
 
   Map<String, String>? _headers;
   Map<String, String>? get headers => _headers;
@@ -24,26 +24,28 @@ abstract class RestApi {
 
   /// API 클래스를 초기화한다.
   void initialize({
-    required String baseUrl,
+    required String authority,
     Map<String, String>? headers,
     HttpMediaType accept = HttpMediaType.APPLICATION_JSON,
     HttpMediaType contentType = HttpMediaType.APPLICATION_JSON,
     Charset charset = Charset.UTF_8,
     Duration timeout = const Duration(seconds: 10)
   }) {
-    final splitBaseUrl = baseUrl.split('://');
-    if (splitBaseUrl.length == 2) {
-      if (splitBaseUrl.first.toLowerCase() == 'http')
+    final splitAuthority = authority.split('://');
+    if (splitAuthority.length == 2) {
+      if (splitAuthority.first.toLowerCase() == 'http')
         _networkProtocol = NetworkProtocol.HTTP;
-      else if (splitBaseUrl.first.toLowerCase() == 'https')
+      else if (splitAuthority.first.toLowerCase() == 'https')
         _networkProtocol = NetworkProtocol.HTTPS;
       else
         throw ApiException('정의되지 않은 네트워크 프로토콜입니다.');
+    } else if (splitAuthority.length == 1) {
+      _networkProtocol = NetworkProtocol.HTTPS;
     } else {
       throw ApiException('주소 형태가 올바르지 않습니다.');
     }
 
-    _baseUrl = splitBaseUrl.last;
+    _authority = splitAuthority.last;
 
     final acString = getStringByHttpMediaType(accept);
     final ctString = getStringByHttpMediaType(contentType);
@@ -63,12 +65,12 @@ abstract class RestApi {
     Map<String, dynamic>? queryParameters,
     dynamic body
   }) async {
-    if (_baseUrl == null)
+    if (_authority == null)
       throw ApiException('API 클래스가 초기화되지 않았습니다.');
 
     final completedUri = (_networkProtocol == NetworkProtocol.HTTP)
-        ? Uri.http(_baseUrl!, path, queryParameters)
-        : Uri.https(_baseUrl!, path, queryParameters);
+        ? Uri.http(_authority!, path, queryParameters)
+        : Uri.https(_authority!, path, queryParameters);
     Response response;
 
     switch (reqMethod) {
@@ -95,7 +97,7 @@ abstract class RestApi {
       sb.write('====== [REST API RESULT] ======\n');
       sb.write('protocol: $_networkProtocol\n');
       sb.write('method:   $reqMethod\n');
-      sb.write('uri:      $_baseUrl$path\n');
+      sb.write('uri:      $_authority$path\n');
       sb.write('headers:  $_headers\n');
       sb.write('body:     $body\n');
       sb.write('result(${response.statusCode}): ${getDecodedBody(response)}\n');
